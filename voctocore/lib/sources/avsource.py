@@ -80,3 +80,6 @@ class AVSource(object):
         self.log.warning('Received Error-Signal on Source-Pipeline')
         (error, debug) = message.parse_error()
         self.log.debug('Error-Details: #%u: %s', error.code, debug)
+
+    def restart(self):
+        raise NotImplementedError('Restarting not implemented for this source')
