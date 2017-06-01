@@ -13,6 +13,7 @@ from lib.videopreviews import VideoPreviewsController
 from lib.toolbar.composition import CompositionToolbarController
 from lib.toolbar.streamblank import StreamblankToolbarController
 from lib.toolbar.misc import MiscToolbarController
+from lib.toolbar.recording import RecordingToolbarController
 
 from lib.shortcuts import show_shortcuts
 
@@ -95,6 +96,12 @@ class Ui(UiBuilder):
         )
 
         self.misc_controller = MiscToolbarController(
+            toolbar,
+            win=self.win,
+            uibuilder=self
+        )
+
+        self.rec_controller = RecordingToolbarController(
             toolbar,
             win=self.win,
             uibuilder=self
