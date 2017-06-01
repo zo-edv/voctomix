@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.18.3 -->
+<!-- Generated with glade 3.20.0 -->
 <interface>
   <requires lib="gtk+" version="3.4"/>
   <object class="GtkImage" id="img-blank-stream">
@@ -144,13 +144,108 @@
               <object class="GtkToolButton" id="cut">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="no_show_all">True</property>
                 <property name="label" translatable="yes">Cut</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-cut</property>
-                <property name="no_show_all">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="rec_btn">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Record</property>
+                <property name="label" translatable="yes">Record</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-media-record</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolItem" id="info">
+                <property name="name">info</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">4</property>
+                    <child>
+                      <object class="GtkLabel" id="rec_time">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="ypad">8</property>
+                        <property name="label" translatable="yes">label</property>
+                        <attributes>
+                          <attribute name="font-desc" value="Monospace 16"/>
+                        </attributes>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="homogeneous">True</property>
+                        <child>
+                          <object class="GtkLabel" id="rec_rate">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">label</property>
+                            <property name="single_line_mode">True</property>
+                            <property name="max_width_chars">10</property>
+                            <attributes>
+                              <attribute name="font-desc" value="&lt;Geben Sie den Wert ein&gt; 7"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="rec_size">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">label</property>
+                            <property name="justify">right</property>
+                            <property name="max_width_chars">10</property>
+                            <attributes>
+                              <attribute name="font-desc" value="&lt;Geben Sie den Wert ein&gt; 7"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
                 <property name="homogeneous">True</property>
               </packing>
             </child>
@@ -168,10 +263,10 @@
               <object class="GtkToolButton" id="close">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="no_show_all">True</property>
                 <property name="label" translatable="yes">Close</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-close</property>
-                <property name="no_show_all">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -271,6 +366,9 @@
                     <property name="can_focus">False</property>
                     <property name="double_buffered">False</property>
                   </object>
+                  <packing>
+                    <property name="index">-1</property>
+                  </packing>
                 </child>
                 <child type="overlay">
                   <object class="GtkDrawingArea" id="video_overlay_drawingarea">
@@ -312,6 +410,9 @@
           </packing>
         </child>
       </object>
+    </child>
+    <child type="titlebar">
+      <placeholder/>
     </child>
   </object>
   <object class="GtkFrame" id="widget_preview">
