@@ -145,6 +145,7 @@ class VideoDisplay(object):
 
         bus.connect('message::error', self.on_error)
         bus.connect("sync-message::element", self.on_syncmsg)
+        bus.connect("message::eos", self.on_eos)
 
         if self.level_callback:
             bus.connect("message::element", self.on_level)
@@ -161,6 +162,9 @@ class VideoDisplay(object):
         self.log.debug('Received Error-Signal on Display-Pipeline')
         (error, debug) = message.parse_error()
         self.log.debug('Error-Details: #%u: %s', error.code, debug)
+
+    def on_eos(self, bus, message):
+        self.log.debug('Received EOS')
 
     def on_level(self, bus, msg):
         if msg.src.name != 'lvl':
