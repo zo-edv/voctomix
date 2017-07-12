@@ -48,7 +48,7 @@ class VideoDisplay(object):
 
         # Setup Server-Connection, Demuxing and Decoding
         pipeline = """
-            tcpclientsrc host={host} port={port} blocksize=1048576 !
+            tcpclientsrc host={host} port={port} blocksize=1048576 timeout=5 !
             queue !
             matroskademux name=demux
         """
@@ -165,6 +165,7 @@ class VideoDisplay(object):
 
     def on_eos(self, bus, message):
         self.log.debug('Received EOS')
+        self.log.debug(self.pipeline.get_state())
 
     def on_level(self, bus, msg):
         if msg.src.name != 'lvl':
