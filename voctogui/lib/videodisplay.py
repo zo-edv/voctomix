@@ -168,7 +168,7 @@ class VideoDisplay(object):
         self.log.debug('Received EOS')
 
     def on_message(self, bus, message):
-        self.log.debug('Received Message: ' + message)
+        self.log.debug('Received Message: ' + str(message))
 
     def on_level(self, bus, msg):
         if msg.src.name != 'lvl':
