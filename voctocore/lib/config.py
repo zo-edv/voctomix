@@ -6,10 +6,10 @@ from lib.args import Args
 __all__ = ['Config']
 
 
-def getlist(self, section, option):
-    return [x.strip() for x in self.get(section, option).split(',')]
+class VocConfigParser(SafeConfigParser):
+    def getlist(self, section, option):
+        return [x.strip() for x in self.get(section, option).split(',')]
 
-SafeConfigParser.getlist = getlist
 
 files = [
     os.path.join(os.path.dirname(os.path.realpath(__file__)),
@@ -26,7 +26,7 @@ files = [
 if Args.ini_file is not None:
     files.append(Args.ini_file)
 
-Config = SafeConfigParser()
+Config = VocConfigParser()
 readfiles = Config.read(files)
 
 log = logging.getLogger('ConfigParser')
@@ -34,3 +34,7 @@ log.debug('considered config-files: \n%s',
           "\n".join(["\t\t" + os.path.normpath(file) for file in files]))
 log.debug('successfully parsed config-files: \n%s',
           "\n".join(["\t\t" + os.path.normpath(file) for file in readfiles]))
+
+if Args.ini_file is not None and Args.ini_file not in readfiles:
+    raise RuntimeError('explicitly requested config-file "{}" '
+                       'could not be read'.format(Args.ini_file))

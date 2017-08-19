@@ -34,6 +34,7 @@ server_config = json.loads(server_config_json)
 def getlist(self, section, option):
     return [x.strip() for x in self.get(section, option).split(',')]
 
+
 SafeConfigParser.getlist = getlist
 
 config = SafeConfigParser()
@@ -49,7 +50,7 @@ for idx, source in enumerate(sources):
 
 try:
     output = sys.argv[1]
-except:
+except IndexError:
     output = 'output.ts'
 
 

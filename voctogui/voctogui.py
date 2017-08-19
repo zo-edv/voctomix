@@ -33,12 +33,7 @@ Gtk.init([])
 
 # import local classes
 from lib.args import Args
-from lib.config import Config
-from lib.ui import Ui
 from lib.loghandler import LogHandler
-
-import lib.connection as Connection
-import lib.clock as ClockManager
 
 
 # main class
@@ -46,6 +41,7 @@ class Voctogui(object):
 
     def __init__(self):
         self.log = logging.getLogger('Voctogui')
+        from lib.ui import Ui
 
         # Uf a UI-File was specified on the Command-Line, load it
         if Args.ui_file:
@@ -119,6 +115,8 @@ def main():
     logging.info('Python Version: %s', sys.version_info)
     logging.info('GStreamer Version: %s', Gst.version())
 
+    from lib.config import Config
+
     # establish a synchronus connection to server
     Connection.establish(
         Args.host if Args.host else Config.get('server', 'host')
@@ -137,13 +135,16 @@ def main():
                                                             '127.0.0.1',
                                                             'localhost']
     if not use_previews and not looks_like_localhost:
-        logging.warn(
+        logging.warning(
             'Connecting to `%s` (which looks like a remote host) '
             'might not work without enabeling the preview encoders '
             '(set `[previews] enabled=true` on the core) or it might saturate '
             'your ethernet link between the two machines.',
             Config.get('server', 'host')
         )
+
+    import lib.connection as Connection
+    import lib.clock as ClockManager
 
     # obtain network-clock
     ClockManager.obtainClock(Connection.ip)
@@ -160,5 +161,10 @@ def main():
     logging.debug('running Voctogui')
     voctogui.run()
 
+
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except RuntimeError as e:
+        logging.error(str(e))
+        sys.exit(1)

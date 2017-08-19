@@ -1,6 +1,5 @@
 import logging
 import math
-from gi.repository import Gst, Gtk
 
 
 class AudioLevelDisplay(object):
@@ -25,7 +24,7 @@ class AudioLevelDisplay(object):
         channels = len(self.levelrms)
 
         if channels == 0:
-            return
+            return False
 
         width = self.drawing_area.get_allocated_width()
         height = self.drawing_area.get_allocated_height()

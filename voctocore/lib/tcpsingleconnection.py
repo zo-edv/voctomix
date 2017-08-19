@@ -1,12 +1,11 @@
 import logging
 import socket
 import time
+from abc import ABCMeta, abstractmethod
 from gi.repository import GObject
 
-from lib.config import Config
 
-
-class TCPSingleConnection(object):
+class TCPSingleConnection(object, metaclass=ABCMeta):
 
     def __init__(self, port):
         if not hasattr(self, 'log'):
@@ -30,8 +29,8 @@ class TCPSingleConnection(object):
         self.log.info('Incomming Connection from %s', addr)
 
         if self.currentConnection is not None:
-            self.log.warn('Another Source is already connected, '
-                          'closing existing pipeline')
+            self.log.warning('Another Source is already connected, '
+                             'closing existing pipeline')
             self.disconnect()
             time.sleep(1)
 
@@ -41,6 +40,19 @@ class TCPSingleConnection(object):
         return True
 
     def close_connection(self):
-        self.currentConnection.close()
+        if self.currentConnection:
+            self.currentConnection.close()
         self.currentConnection = None
         self.log.info('Connection closed')
+
+    @abstractmethod
+    def on_accepted(self, conn, addr):
+        raise NotImplementedError(
+            "child classes of TCPSingleConnection must implement on_accepted()"
+        )
+
+    @abstractmethod
+    def disconnect(self):
+        raise NotImplementedError(
+            "child classes of TCPSingleConnection must implement disconnect()"
+        )

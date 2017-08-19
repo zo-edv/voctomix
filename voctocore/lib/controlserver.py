@@ -1,12 +1,10 @@
-import socket
 import logging
-import traceback
 from queue import Queue
 from gi.repository import GObject
 
 from lib.commands import ControlServerCommands
 from lib.tcpmulticonnection import TCPMultiConnection
-from lib.response import NotifyResponse, OkResponse
+from lib.response import NotifyResponse
 
 
 class ControlServer(TCPMultiConnection):
@@ -42,7 +40,7 @@ class ControlServer(TCPMultiConnection):
 
                 except UnicodeDecodeError as e:
                     continue
-        except:
+        except BlockingIOError:
             pass
 
         data = "".join(leftovers)
@@ -163,16 +161,6 @@ class ControlServer(TCPMultiConnection):
         try:
             conn.send(message.encode())
         except Exception as e:
-            self.log.warn(e)
+            self.log.warning('failed to send message', exc_info=True)
 
         return True
-
-    def notify_all(self, msg):
-        try:
-            words = msg.split()
-            words[-1] = self.commands.encodeSourceName(int(words[-1]))
-            msg = " ".join(words) + '\n'
-            for conn in self.currentConnections:
-                self._schedule_write(conn, msg)
-        except Exception as e:
-            self.log.debug("error during notify: %s", e)

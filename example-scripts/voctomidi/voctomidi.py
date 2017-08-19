@@ -38,7 +38,7 @@ class MidiInputHandler(object):
                 try:
                     conn = socket.create_connection((host, port))
                     print("Reconnected to voctocore")
-                except:
+                except socket.error:
                     pass
         else:
             print("[{}]: Unhandled NOTE ON event {}".format(self.port,
@@ -48,6 +48,7 @@ class MidiInputHandler(object):
 @atexit.register
 def kthxbye():
     print("Exit")
+
 
 conn, midiin = None, None
 
@@ -63,6 +64,7 @@ def close_conn():
     global conn
     conn and conn.close()
 
+
 try:
     midiin, port_name = open_midiport(device)
 except (EOFError, KeyboardInterrupt):
@@ -75,6 +77,7 @@ def close_midi():
     global midiin
     midiin and midiin.close_port()
     del midiin
+
 
 midiin.set_callback(MidiInputHandler(port_name))
 

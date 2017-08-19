@@ -1,7 +1,5 @@
 import logging
-from gi.repository import GLib, Gst, cairo
-
-from lib.config import Config
+from gi.repository import GLib
 
 
 class VideoWarningOverlay(object):
@@ -37,9 +35,9 @@ class VideoWarningOverlay(object):
         self.drawing_area.hide()
         self.drawing_area.queue_draw()
 
-    def draw_callback(self, area, cr):
-        w = self.drawing_area.get_allocated_width()
-        h = self.drawing_area.get_allocated_height()
+    def draw_callback(self, drawing_area, cr):
+        w = drawing_area.get_allocated_width()
+        h = drawing_area.get_allocated_height()
 
         self.log.debug('draw_callback: w/h=%u/%u, blink_state=%u',
                        w, h, self.blink_state)

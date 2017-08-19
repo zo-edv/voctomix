@@ -5,15 +5,16 @@ import inspect
 from lib.config import Config
 from lib.videomix import CompositeModes
 from lib.response import NotifyResponse, OkResponse
+from lib.sources import restart_source
 
 
 def decodeName(items, name_or_id):
     try:
-        name_or_id = int(name_or_id)
-        if name_or_id < 0 or name_or_id >= len(items):
-            raise IndexError("unknown index %d" % name_or_id)
+        id = int(name_or_id)
+        if id < 0 or id >= len(items):
+            raise IndexError("unknown index %d" % id)
 
-        return name_or_id
+        return id
 
     except ValueError as e:
         try:
@@ -25,11 +26,7 @@ def decodeName(items, name_or_id):
 
 def decodeEnumName(enum, name_or_id):
     try:
-        name_or_id = int(name_or_id)
-        if name_or_id < 0 or name_or_id >= len(enum):
-            raise IndexError("unknown index %d" % name_or_id)
-
-        return name_or_id
+        id = int(name_or_id)
 
     except ValueError as e:
         try:
@@ -38,18 +35,13 @@ def decodeEnumName(enum, name_or_id):
         except KeyError as e:
             raise IndexError("unknown name %s" % name_or_id)
 
+    return enum(id)
+
 
 def encodeName(items, id):
     try:
         return items[id]
     except IndexError as e:
-        raise IndexError("unknown index %d" % id)
-
-
-def encodeEnumName(enum, id):
-    try:
-        return enum(id).name
-    except ValueError as e:
         raise IndexError("unknown index %d" % id)
 
 
@@ -84,13 +76,14 @@ class ControlServerCommands(object):
                 continue
 
             params = inspect.signature(func).parameters
-            params = [str(info) for name, info in params.items()]
-            params = ', '.join(params[1:])
+            params_iter = (str(info) for name, info in params.items())
+            next(params_iter)
+            params_str = ', '.join(params_iter)
 
             command_sig = '\t' + name
 
-            if params:
-                command_sig += ': ' + params
+            if params_str:
+                command_sig += ': ' + params_str
 
             if func.__doc__:
                 command_sig += '\n\t\t{}\n'.format('\n\t\t'.join(
@@ -151,11 +144,16 @@ class ControlServerCommands(object):
         return NotifyResponse('video_status', *status)
 
     def _get_audio_status(self):
-        src_id = self.pipeline.amix.getAudioSource()
-        return encodeName(self.sources, src_id)
+        volumes = self.pipeline.amix.getAudioVolumes()
+        return '{' + ', '.join(
+            '"{}": {:.4f}'.format(
+                encodeName(self.sources, idx),
+                volumes[idx]
+            ) for idx in range(len(volumes))
+        ) + '}'
 
     def get_audio(self):
-        """gets the name of the current audio-source"""
+        """gets the current volumes of the audio-sources"""
         status = self._get_audio_status()
         return OkResponse('audio_status', status)
 
@@ -167,9 +165,20 @@ class ControlServerCommands(object):
         status = self._get_audio_status()
         return NotifyResponse('audio_status', status)
 
+    def set_audio_volume(self, src_name_or_id, volume):
+        """sets the volume of the supplied source-name or source-id"""
+        src_id = decodeName(self.sources, src_name_or_id)
+        volume = float(volume)
+        if volume < 0.0:
+            raise ValueError("volume must be positive")
+        self.pipeline.amix.setAudioSourceVolume(src_id, volume)
+
+        status = self._get_audio_status()
+        return NotifyResponse('audio_status', status)
+
     def _get_composite_status(self):
         mode = self.pipeline.vmix.getCompositeMode()
-        return encodeEnumName(CompositeModes, mode)
+        return mode.name
 
     def get_composite_mode(self):
         """gets the name of the current composite-mode"""
@@ -246,3 +255,8 @@ class ControlServerCommands(object):
         confdict = {header: dict(section)
                     for header, section in dict(Config).items()}
         return OkResponse('server_config', json.dumps(confdict))
+
+    def restart_source(self, src_name):
+        """restarts the specified source"""
+        restart_source(src_name)
+        return OkResponse('source_restarted', src_name)

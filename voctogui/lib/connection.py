@@ -1,7 +1,6 @@
 import logging
 import socket
 import json
-import sys
 from queue import Queue
 from gi.repository import Gtk, GObject
 
@@ -74,7 +73,7 @@ def on_data(conn, _, leftovers, *args):
 
             except UnicodeDecodeError as e:
                 continue
-    except:
+    except BlockingIOError:
         pass
 
     data = "".join(leftovers)
@@ -124,12 +123,7 @@ def on_loop():
         return True
 
     for handler in signal_handlers[signal]:
-        cb = handler['cb']
-        if 'one' in handler and handler['one']:
-            log.debug('removing one-time handler')
-            del signal_handlers[signal]
-
-        cb(*args)
+        handler(*args)
 
     return True
 
@@ -148,11 +142,4 @@ def on(signal, cb):
     if signal not in signal_handlers:
         signal_handlers[signal] = []
 
-    signal_handlers[signal].append({'cb': cb})
-
-
-def one(signal, cb):
-    if signal not in signal_handlers:
-        signal_handlers[signal] = []
-
-    signal_handlers[signal].append({'cb': cb, 'one': True})
+    signal_handlers[signal].append(cb)
