@@ -160,7 +160,7 @@
                 <property name="homogeneous">True</property>
               </packing>
             </child>
-            <child>
+           <child>
               <object class="GtkToolButton" id="rec_btn">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
